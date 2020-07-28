@@ -11,11 +11,10 @@ class FakeToastTod(object):
     def func_only_in_toast(self):
         return 'func_only_in_toast: see if this function is being called.'
 
-class TodToastWrapper(sa_tod.TodBase,FakeToastTod):
+class TodToastWrapper(FakeToastTod):
     def __init__(self,
                  tod_list=None,
                  input_name_list=None, tod_cache=None): # Need to rewrite the way to instantiate the class.
-        sa_tod.TodBase.__init__(self)
         FakeToastTod.__init__(self) # If you want to pass arguments for TOAST here, you can do so here following the self argument.
 
         self._current_tod_index = 0
@@ -53,10 +52,11 @@ class TodToastWrapper(sa_tod.TodBase,FakeToastTod):
         return self._input_name_list
 
     def __getitem__(self, idx):
-        class _TodSingle:
+        class _TodSingle(sa_tod.TodBase):
             def __init__(self, tod, tod_index):
                 self._tod_index = tod_index
                 self._tod = tod
+                super().__init__(self)
 
             def set_tod_index(self, tod_index):
                 raise RuntimeError('_TodSingle.set_tod_index(...): this should not be called.')
